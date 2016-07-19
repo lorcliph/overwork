@@ -1,0 +1,22 @@
+{
+  "AttachStdin" : false,
+  "AttachStdout" : false,
+  "AttachStderr" : false,
+  "OpenStdin" : true,
+  "Image" : "lordcliph/auth_image",
+  "Volumes" : { },
+  "ExposedPorts" : {
+    "1337/tcp": {}
+  },
+  "HostConfig" : {
+    "Binds" : [ ],
+    "Links" : [ "mongo:mongo" ],
+    "PortBindings" : {
+      "1337/tcp" : [ {
+        "HostIp" : "",
+        "HostPort" : "3000"
+      } ]
+    }
+  },
+  "_comment" : ""
+}

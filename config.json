@@ -1,0 +1,26 @@
+{
+    "port": 1337,
+    "security": {
+        "tokenLife" : 3600
+    },
+    "mongoose": {
+        "uri": "mongodb://localhost/apiDB"
+    },
+    "default": {
+        "api": {
+            "version" : "v1"
+        },
+        "user": {
+            "username": "myapi",
+            "password": "abc1234",
+            "group" : {"level1": "saison"},
+            "authority" : "admin"
+        },
+        "client": {
+            "name": "adminConsole",
+            "clientId": "adminConsole",
+            "clientSecret": "ClientSecretForAdminConsole",
+            "scope" : ["overwork","adminConsole"]
+        }
+    }
+}

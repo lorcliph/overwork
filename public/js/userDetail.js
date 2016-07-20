@@ -2,7 +2,7 @@
  * Created by shinyaohnuki on 2016/06/23.
  */
 var app = angular.module('userDetail', ['ngCookies','auth']);
-app.config(["$locationProvider", function($locationProvider) {$locationProvider.html5Mode(true);}]);
+
 app.controller('userDetailCtrl', ['$scope','$http','$cookies','$window','auth','$location','$timeout', function ($scope, $http, $cookies, $window, $location, auth, $timeout) {
 
     var userId = $location.search()['userId'];

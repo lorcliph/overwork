@@ -7,7 +7,7 @@ var log = require(libs + 'log')(module);
 var db = require(libs + 'db/mongoose');
 var User = require(libs + 'model/user');
 
-router.get('/:id', passport.authenticate('bearer', { session: false }),
+router.get('/id/:id', passport.authenticate('bearer', { session: false }),
     function(req, res) {
 
         User.findById(req.params.id, function(err, user){
@@ -21,6 +21,14 @@ router.get('/:id', passport.authenticate('bearer', { session: false }),
         });
     }
 );
+
+router.get('/me', passport.authenticate('bearer', { session: false }),
+    function(req, res) {
+                res.json(req.user);
+        }
+);
+
+
 
 router.get('/', passport.authenticate('bearer', {session: false}),
     function(req, res){
@@ -72,35 +80,45 @@ router.post('/', passport.authenticate('bearer', {session: false}),
 
 router.put('/', passport.authenticate('bearer', {session: false}),
     function(req, res){
-        if(req.authInfo.user.authority != "admin"){ res.status(401).send('unauthorized request.'); }
-        new User(req.doby.user).save(function(err, user) {
-            if(!err) {
-                log.info("Update user - %s:%s", user.userName, user._id);
-                res.json({message: 'New user added', user: user});
-            }else {
-                return log.error(err);
-            }
-        });
+        log.info('authInfo:'+JSON.stringify(req.user));
+        if(req.user.authority != "admin"){ res.status(401).send('unauthorized request.'); }
+        log.info('req.body.user:'+JSON.stringify(req.body.user));
+        User.findOneAndUpdate({_id:req.body.user._id},
+            {
+                username: req.body.user.username,
+                password: req.body.user.password,
+                group: {
+                    level1: req.body.user.group.level1,
+                    level2: req.body.user.group.level2,
+                    level3: req.body.user.group.level3
+                    },
+                authority: req.body.user.authority
+            },function(err, user) {
+                if(!err) {
+                    log.info("Update user - %s:%s", user.userName, user._id);
+                    res.json({message: 'New user added', user: user});
+                }else {
+                    log.info('user save err:'+JSON.stringify(err));
+                    return log.error(err);
+                }
+            });
     }
 );
 
-router.delete('/', passport.authenticate('bearer', {session: false}),
+router.delete('/:id', passport.authenticate('bearer', {session: false}),
     function(req, res){
-        if(req.authInfo.user.authority != "admin"){ res.status(401).send('unauthorized request.'); }
-        User.findById(req.body.userId, function(err, user){
+        if(req.user.authority != "admin"){ res.status(401).send('unauthorized request.'); }
+        log.info('remove userId:'+req.params.id);
+        User.remove({_id:req.params.id}, function(err, user){
 
-            if(!user){ res.status(404).send('user not found.'); }
+            if(!err) {
+                log.info("deleted user");
+                res.json({message: 'user deleted'});
+            }else {
+                log.info('user delete err:'+JSON.stringify(err));
+                return log.error(err);
+            }
 
-            user.delete(function(err, user){
-               if(err){ res.status(500).send('internal server failure.')}
-                User.findById(user.userId, function(err, user){
-                    if(user) {
-                        res.send('user not deleted...: ' + user);
-                    }else{
-                        res.send('user deleted');
-                    }
-                })
-            });
         });
     }
 );

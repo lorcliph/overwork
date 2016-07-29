@@ -15,8 +15,10 @@ app.factory('auth',['$cookies','$http','$q',function($cookies,$http,$q){
             var refreshToken = $cookies.get("refreshToken");
 
             if (accessToken) {
+                console.log('access token is found in cookie');
                 defer.resolve(accessToken);
             }else if(refreshToken){
+                console.log('access token is found in cookie but refreshToken');
                 var postData = {
                     "grant_type": "refresh_token", //grant_type is fixed name for "oauth2orize"
                     "client_id": "adminConsole", //client_id is fixed name for "passport-oauth2-client-password"

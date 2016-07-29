@@ -1,22 +1,20 @@
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
-
-var async = require('async');
 var moment = require('moment');
 
 var libs = '/src/libs/';
 var log = require(libs + 'log')(module);
 var db = require(libs + 'db/mongoose');
-var Works = require(libs + 'model/work');
-var User = require(libs + 'model/user');
+var Work = require(libs + 'model/work');
 
-router.get('/:id', passport.authenticate('bearer', { session: false }),
+//_id pinpoint get
+router.get('/work/:id', passport.authenticate('bearer', { session: false }),
     function(req, res) {
 
-        Works.findById(req.params.id, function(err, work){
+        Work.findById(req.params.id, function(err, work){
             if(!err) {
-                log.info('/info work found :'+JSON.stringify(work));
+                log.info('work found :'+JSON.stringify(work));
                 res.json(work);
             }else {
                 log.info('/info error');
@@ -26,15 +24,62 @@ router.get('/:id', passport.authenticate('bearer', { session: false }),
     }
 );
 
+//get all works related tu userid.
+router.get('/user/:userid', passport.authenticate('bearer', { session: false }),
+    function(req, res) {
+
+        Work.find({userId:req.params.userid}, function(err, works){
+            if(!err) {
+                log.info('works found :'+JSON.stringify(work));
+                res.json(work);
+            }else {
+                log.info('/info error');
+                return log.error(err);
+            }
+        });
+    }
+);
+
+//get todays work
+router.get('/today', passport.authenticate('bearer', { session: false }),
+    function(req, res) {
+        var today = moment({h:0, m:0, s:0, ms:0}).toDate();
+        Work.findOne({userId:req.user._id, workDate:today}, function(err, work){
+            if(work) {
+                log.info('works found :'+JSON.stringify(work));
+                res.json(work);
+            }else{
+                var newWork = new Work({
+                    userId: req.user._id,
+                    workDate: today,
+                    userIdWorkDate: req.user._id+moment(today).format('yyyymmdd'),
+                    estimateTime: null,
+                    finishedTime: null,
+                    status:'waiting'
+                });
+
+                newWork.save(function(err, work) {
+                    if(!err) {
+                        log.info('New work');
+                        res.json({message: 'New work added', work: work});
+                    }else {
+                        log.error(err);
+                        res.json(err) ;
+                    }
+                });
+            }
+        });
+    }
+);
+
+//get all work(for admin)
 router.get('/', passport.authenticate('bearer', {session: false}),
     function(req, res){
-        log.info('get works req:'+ JSON.stringify(req.authInfo));
-        // if(req.authInfo.user.authority != "admin"){
-        //     res.status(401).send('unauthorized request.');
-        // }
-        Works.find({userId: req.authInfo.user._id}, function(err, works){
+        if(req.user.authority != "admin"){ res.status(401).send('unauthorized request.'); return; }
+
+        Work.find({}, function(err, works){
             if(!err) {
-                log.info('/ work found :'+JSON.stringify(works));
+                log.info('/ user found :'+JSON.stringify(works));
                 res.json(works);
             }else {
                 log.info('/ error');
@@ -45,100 +90,42 @@ router.get('/', passport.authenticate('bearer', {session: false}),
     }
 );
 
-// router.post('/', passport.authenticate('bearer', {session: false}),
-//     function(req, res){
-//
-//         log.info('POST Works req:'+ JSON.stringify(req.body.work));
-//
-//         var work = new Work({
-//             userId: req.body.work.userId,
-//             workDate: req.body.work.workDate,
-//             userIdWorkDate: req.body.work.userId + req.body.work.workDate, //the unique field.
-//             estimateTime:req.body.work.estimateTime,
-//             status:req.body.work.status,
-//             finishedTime:req.body.work.finishedTime
-//         });
-//
-//         work.save(function(err, work) {
-//             if(!err) {
-//                 log.info("New work - %s:%s", work.workDate, work.status);
-//                 res.json({message: 'New work added', work: work});
-//             }else {
-//                 log.error(err);
-//                 res.json(err) ;
-//             }
-//         });
-//     }
-// );
-
 router.put('/', passport.authenticate('bearer', {session: false}),
     function(req, res){
+        log.info('req.body.work:'+JSON.stringify(req.body.work));
+        Work.update({_id:req.body.work._id},
+            {
+                estimateTime: req.body.work.estimateTime,
+                status: req.body.work.status,
+                finishedTime: req.body.work.finishedTime
+            },function(err, work) {
+                if(!err) {
+                    log.info("Update work :", JSON.stringify(work));
+                    res.json({message: 'work updated', work: work});
+                }else {
+                    log.info('work save err:'+JSON.stringify(err));
+                    return log.error(err);
+                }
+            });
+    }
+);
 
-        new Work(req.doby.work).save(function(err, work) {
+router.delete('/:id', passport.authenticate('bearer', {session: false}),
+    function(req, res){
+        log.info('remove workId:'+req.params.id);
+        Work.remove({_id:req.params.id}, function(err, work){
+
             if(!err) {
-                log.info("Update work - %s:%s", work.workDate, work.status);
-                res.json({message: 'work updated', work: work});
+                log.info("deleted work");
+                res.json({message: 'work deleted'});
             }else {
+                log.info('work delete err:'+JSON.stringify(err));
                 return log.error(err);
             }
+
         });
     }
 );
 
-router.delete('/', passport.authenticate('bearer', {session: false}),
-    function(req, res){
-
-        Works.findById(req.body.workId, function(err, work){
-
-            if(!work){ res.status(404).send('work not found.'); }
-
-            work.delete(function(err, work){
-               if(err){ res.status(500).send('internal server failure.')}
-                Work.findById(user.userId, function(err, work){
-                    if(work) {
-                        res.send('work not deleted...: ' + work);
-                    }else{
-                        res.send('work deleted');
-                    }
-                })
-            });
-        });
-    }
-);
-
-
-router.get('/check', passport.authenticate('bearer',{session: false}),
-    function(req,res){
-
-        var searchKey = req.authInfo.user._id + moment().format('YYYYMMDD');
-        log.info('/check searchKey :'+searchKey);
-        Works.findOne({userIdWorkDate:searchKey}, function(err,work){
-                if(!err){
-                    if(work){
-                       res.JSON({message:'work is found',work: work});
-                    }else{
-                        var newWork = new Work({
-                            userId: req.authInfo.user._id,
-                            workDate: moment({'hour': 0, 'minute': 0, 'second': 0, 'millisecond': 0}).toDate(),
-                            userIdWorkDate: req.authInfo.user._id + moment().format('YYYYMMDD'), //the unique field.
-                            estimateTime:moment({'hour':17, 'minute':45, 'second':0, 'millisecond':0}).toDate(),
-                            status:'waiting'
-                        });
-
-                        newWork.save(function(err, work) {
-                            if(!err) {
-                                log.info("New work - %s:%s", work.workDate, work.status);
-                                res.json({message: 'New work added', work: work});
-                            }else {
-                                log.error(err);
-                                res.json({message: 'error',err: err}) ;
-                            }
-                        });
-                    }
-                }
-            }
-        );
-    }
-);
 
 module.exports = router;

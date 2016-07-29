@@ -100,28 +100,28 @@ passport.use(new BearerStrategy(
                 if (err) {
                     log.info('BearerStrategy error at finding User');
                 	return done(err); 
-                }
-
-                if (!user) {
+                }else if (!user) {
                     log.info('BearerStrategy User not found');
                 	return done(null, false, { message: 'Unknown user' }); 
+                }else {
+                    log.info('bearerStrategy user:'+JSON.stringify(user));
+                    return done(null, user);
                 }
-
-                log.info('bearerStrategy token.clientID :'+token.clientId);
-                Client.findOne({ clientId: token.clientId }, function(err, client){
-                    if(err){
-                        log.info('BearerStrategy error at finding client');
-                        return done(err);
-                    }
-                    if(!client){
-                        log.info('bearerStrategy client not found');
-                        return done(null, false, {message: 'Unknown client'});
-                    }
-
-                    var info = {"token" : token, "client": client, "user": user};
-                    log.info('bearerStrategy authinfo:'+JSON.stringify(info));
-                    return done(null, info);
-                });
+                // log.info('bearerStrategy token.clientID :'+token.clientId);
+                // Client.findOne({ clientId: token.clientId }, function(err, client){
+                //     if(err){
+                //         log.info('BearerStrategy error at finding client');
+                //         return done(err);
+                //     }
+                //     if(!client){
+                //         log.info('bearerStrategy client not found');
+                //         return done(null, false, {message: 'Unknown client'});
+                //     }
+                //
+                //     var authInfo = {"token" : token, "client": client, "user": user};
+                //     log.info('bearerStrategy authinfo:'+JSON.stringify(authInfo));
+                //     return done(null, authInfo);
+                // });
             });
         });
     }

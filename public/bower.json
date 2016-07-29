@@ -40,6 +40,7 @@
     "flot.tooltip": "~0.8.4",
     "angular-latest": "~1.5.7",
     "angular-datatables": "~0.5.4",
-    "moment": "~2.14.1"
+    "moment": "~2.14.1",
+    "moment-timezone": "~0.5.4"
   }
 }

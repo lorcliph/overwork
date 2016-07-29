@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="overWork">
+<html ng-app="overWork" manifest="nocache.appcache">
 
 <head>
 
@@ -48,6 +48,10 @@
 
     <!-- moment -->
     <script src="../bower_components/moment/min/moment.min.js"></script>
+
+    <!-- moment-timezone -->
+    <script src="../bower_components/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+
 
     <!-- Custom Theme JavaScript -->
     <script src="../js/auth.js"></script>
@@ -99,11 +103,11 @@
                         <form role="form">
                             <fieldset>
                                 <div class="form-group">
-                                    <input class="form-control" name="estiname_time" type="text" ng-model="estimateTime" autofocus>
+                                    <input class="form-control" name="estiname_time" type="text" ng-disabled="estimateInput" ng-model="estimateTime" autofocus>
                                 </div>
 
-                                <a id='updateBtn' class="btn btn-lg btn-success btn-block disabled" ng-click="updateEstimateTime()">update estimateTime</a>
-                                <a id='finishBtn' class="btn btn-lg btn-success btn-block disabled" ng-click="finishWork()">finish work</a>
+                                <a id='updateBtn' class="btn btn-lg btn-success btn-block" ng-disabled="updateDisabled" ng-click="updateEstimateTime()">update estimateTime</a>
+                                <a id='finishBtn' class="btn btn-lg btn-success btn-block" ng-disabled="finishDisabled" ng-click="finishWork()">finish work</a>
                                 <a class="btn btn-lg btn-default btn-block" href="users.html">back</a>
                             </fieldset>
                         </form>

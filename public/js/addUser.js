@@ -10,11 +10,11 @@ app.controller('addUserCtrl', ['$scope','$http','$cookies','$window','auth', fun
     $scope.user.authority = $scope.authorities[0];
 
     $scope.addUser = function(){
-        console.log(JSON.stringify($scope.user));
+        // console.log(JSON.stringify($scope.user));
         auth.getAccessToken().then(
             function success(accessToken){
 
-                console.log(JSON.stringify($scope.user));
+                // console.log(JSON.stringify($scope.user));
                 if(!$scope.user.username){
                     alert("userName is missing.");
                     return;
@@ -50,7 +50,7 @@ app.controller('addUserCtrl', ['$scope','$http','$cookies','$window','auth', fun
                 $http.post('/api/users/',postData).then(
                     function success(res){
                         console.log(JSON.stringify(res.data));
-                        alert(JSON.stringify(res.data));
+                        if(!confirm("add user?")){ return; }
                         $window.location.href = "users.html";
                     },
                     function failure(res) {

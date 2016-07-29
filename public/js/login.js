@@ -9,7 +9,23 @@ app.controller("loginCtrl", ['$scope','$http','$cookies','$window','auth', funct
         auth.getAccessToken().then(
             function success(accessToken){
                 console.log("success accessToken:"+accessToken);
-                $window.location.href = "users.html";
+
+                $http.defaults.headers.common.Authorization = 'Bearer ' + accessToken;
+                $http.get('/api/users/me').then(
+                    function success(res){
+                        var user = res.data;
+                        if(user.authority=='admin'){
+                            $window.location.href = "users.html";
+                        }else{
+                            $window.location.href = "overWork.html";
+                        }
+                    },function failure(res) {
+                        console.log('http error' + JSON.stringify(res));
+                        $cookies.remove("accessToken");
+                        $cookies.remove("refreshToken");
+                        alert('failed to login.');
+                    }
+                );
             },
             function failure(){
                 console.log("failed to get accessToken.");
@@ -21,7 +37,22 @@ app.controller("loginCtrl", ['$scope','$http','$cookies','$window','auth', funct
                 console.log("submitLogin :" + JSON.stringify($scope.user));
                 auth.authenticateUser($scope.user).then(
                     function success(accessToken) {
-                        $window.location.href = "users.html";
+                        $http.defaults.headers.common.Authorization = 'Bearer ' + accessToken;
+                        $http.get('/api/users/me').then(
+                            function success(res){
+                                var user = res.data;
+                                if(user.authority=='admin'){
+                                    $window.location.href = "users.html";
+                                }else{
+                                    $window.location.href = "overWork.html";
+                                }
+                            },function failure(res) {
+                                console.log('http error' + JSON.stringify(res));
+                                $cookies.remove("accessToken");
+                                $cookies.remove("refreshToken");
+                                alert('failed to login.');
+                            }
+                        );
                     }, function failure(res) {
                         alert("Authentication failed.")
                         console.log(JSON.stringify(res));

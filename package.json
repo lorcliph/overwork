@@ -25,6 +25,7 @@
         "winston": "^0.8.x",
         "serve-static": "~1.11.x",
         "moment": "~2.14.x",
+        "moment-timezone": "~0.5.x",
         "async": "~2.0.x"
     },
     "jshintConfig":{

@@ -12,18 +12,31 @@ app.controller('overWorkCtrl', ['$scope','$http','$cookies','$window','auth', fu
     auth.getAccessToken().then(
         function success(accessToken){
             $http.defaults.headers.common.Authorization = 'Bearer ' + accessToken;
-            $http.get('/api/works/check').then(
+            $http.get('/api/works/today').then(
                 function success(res){
-                    if(!res.data.err && res.data.work) {
-                        $scope.work = res.data.work;
+                    if(res.data) {
+                        $scope.work = res.data;
                         console.log('work :'+JSON.stringify($scope.work));
-                        $scope.estimateTime = moment($scope.work.estimateTime).format('hh:mm');
-                        $scope.messate = $scope.estimateTime;
-                        $('#updateBtn').show();
-                        $('#finishBtn').show();
+                        if($scope.work.status=='waiting'){
+                            console.log('is waiting');
+                            $scope.updateDisabled = false;
+                            $scope.finishDisabled = true;
+                            $scope.estimateTime = moment().tz('Asia/Tokyo').set({'hour':17, 'minute':45, 'second':0, 'millisecond':0}).format('HH:mm');
+                        }else if($scope.work.status=='estimated') {
+                            console.log('is estimated');
+                            $scope.estimateTime = moment($scope.work.estimateTime).format('HH:mm');
+                            $scope.message = "will finish work at "+$scope.estimateTime;
+                            $scope.updateDisabled = false;
+                            $scope.finishDisabled = false;
+                        }else{
+                            console.log('is other '+ $scope.work.status);
+                            $scope.message = "finished work at "+moment($scope.work.finishedTime).tz('Asia/Tokyo').format('HH:mm');
+                            $scope.updateDisabled = false;
+                            $scope.finishDisabled = true;
+                        }
                     }else{
-                        console.log(JSON.stringify(res.data.err));
-                        alert(JSON.stringify(res.data.err));
+                        console.log(JSON.stringify(res));
+                        alert(JSON.stringify('error.'));
                     }
                 },
                 function failure(res) {
@@ -43,23 +56,15 @@ app.controller('overWorkCtrl', ['$scope','$http','$cookies','$window','auth', fu
         auth.getAccessToken().then(
             function success(accessToken){
 
-                var newWork = {
-                    work: {
-                        userId: $scope.work.userId,
-                        workDate: $scope.work.workDate,
-                        userIdWorkDate: $scope.work.userIdWorkDate,
-                        estimateTime:moment($scope.estimateTime,'hh:mm').toDate(),
-                        status:'estimated'
-                    }
-                };
+                $scope.work.estimateTime = moment($scope.estimateTime,'hh:mm').toDate();
+                $scope.work.status = 'estimated';
 
-                console.log('newWork :' + JSON.stringify(newWork));
+                console.log('newWork :' + JSON.stringify($scope.work));
                 $http.defaults.headers.common.Authorization = 'Bearer ' + accessToken;
-                $http.put('/api/works/',newWork).then(
+                $http.put('/api/works/',{'work':$scope.work}).then(
                     function success(res){
                         console.log(JSON.stringify(res.data));
-                        alert(JSON.stringify(res.data));
-                        $window.location.href = "#";
+                        $window.location.reload(true);
                     },
                     function failure(res) {
                         console.log('http error' + JSON.stringify(res));
@@ -82,25 +87,16 @@ app.controller('overWorkCtrl', ['$scope','$http','$cookies','$window','auth', fu
         auth.getAccessToken().then(
             function success(accessToken){
 
-                var newWork = {
-                    work: {
+                console.log('moment().toDate() : '+moment().toDate());
+                $scope.work.finishedTime = moment().tz('Asia/Tokyo').toDate();
+                $scope.work.status = 'finished';
 
-                        userId: $scope.work.userId,
-                        workDate: $scope.work.workDate,
-                        userIdWorkDate: $scope.work.userIdWorkDate,
-                        estimateTime:$scope.work.estimatedTime,
-                        finishedTime:moment().toDate(),
-                        status:'finished'
-                    }
-                };
-
-                console.log('newWork :' + JSON.stringify(newWork));
+                console.log('newWork :' + JSON.stringify($scope.work));
                 $http.defaults.headers.common.Authorization = 'Bearer ' + accessToken;
-                $http.put('/api/works/',newWork).then(
+                $http.put('/api/works/',{'work':$scope.work}).then(
                     function success(res){
                         console.log(JSON.stringify(res.data));
-                        alert(JSON.stringify(res.data));
-                        $window.location.href = "#";
+                        $window.location.reload(true);
                     },
                     function failure(res) {
                         console.log('http error' + JSON.stringify(res));
@@ -117,6 +113,7 @@ app.controller('overWorkCtrl', ['$scope','$http','$cookies','$window','auth', fu
             }
         );
     };
+    
     $scope.logout = function(){
         $cookies.remove("accessToken");
         $cookies.remove("refreshToken");

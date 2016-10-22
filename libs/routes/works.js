@@ -30,8 +30,8 @@ router.get('/user/:userid', passport.authenticate('bearer', { session: false }),
 
         Work.find({userId:req.params.userid}, function(err, works){
             if(!err) {
-                log.info('works found :'+JSON.stringify(work));
-                res.json(work);
+                log.info('works found :'+JSON.stringify(works));
+                res.json(works);
             }else {
                 log.info('/info error');
                 return log.error(err);

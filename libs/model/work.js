@@ -7,6 +7,9 @@ var Work = new Schema({
 			type: String,
 			required: true
 		},
+		username: {
+			type: String
+		},
 		workDate: {
 			type: Date,
 			required: true
@@ -20,10 +23,16 @@ var Work = new Schema({
 		},
 		status: {
 			type: String,
-			enum:['waiting','estimated','finished']
+			enum:['waiting','estimated','approved','declined','finished']
 		},
 		finishedTime: {
 			type: Date
+		},
+		workReason: {
+			type: String
+		},
+		declineReason: {
+			type: String
 		}
 	});
 

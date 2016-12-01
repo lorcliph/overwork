@@ -51,11 +51,14 @@ router.get('/today', passport.authenticate('bearer', { session: false }),
             }else{
                 var newWork = new Work({
                     userId: req.user._id,
+                    username: req.user.username,
                     workDate: today,
                     userIdWorkDate: req.user._id+moment(today).format('yyyymmdd'),
                     estimateTime: null,
                     finishedTime: null,
-                    status:'waiting'
+                    status:'waiting',
+                    workReason:null,
+                    declineReason:null
                 });
 
                 newWork.save(function(err, work) {
@@ -73,7 +76,7 @@ router.get('/today', passport.authenticate('bearer', { session: false }),
 );
 
 //get all work(for admin)
-router.get('/', passport.authenticate('bearer', {session: false}),
+router.get('/admin', passport.authenticate('bearer', {session: false}),
     function(req, res){
         if(req.user.authority != "admin"){ res.status(401).send('unauthorized request.'); return; }
 
@@ -90,14 +93,34 @@ router.get('/', passport.authenticate('bearer', {session: false}),
     }
 );
 
+//get all work(for admin)
+router.get('/admin/today', passport.authenticate('bearer', {session: false}),
+    function(req, res){
+        if(req.user.authority != "admin"){ res.status(401).send('unauthorized request.'); return; }
+        var today = moment({h:0, m:0, s:0, ms:0}).toDate();
+        Work.find({workDate:today}, function(err, works){
+            if(!err) {
+                log.info('/ user found :'+JSON.stringify(works));
+                res.json(works);
+            }else {
+                log.info('/ error');
+                return log.error(err);
+            }
+
+        });
+    }
+);
+
 router.put('/', passport.authenticate('bearer', {session: false}),
     function(req, res){
-        log.info('req.body.work:'+JSON.stringify(req.body.work));
+        log.info('updateWork req.body.work:'+JSON.stringify(req.body.work));
         Work.update({_id:req.body.work._id},
             {
                 estimateTime: req.body.work.estimateTime,
                 status: req.body.work.status,
-                finishedTime: req.body.work.finishedTime
+                finishedTime: req.body.work.finishedTime,
+                workReason: req.body.work.workReason,
+                declineReason: req.body.work.declineReason
             },function(err, work) {
                 if(!err) {
                     log.info("Update work :", JSON.stringify(work));

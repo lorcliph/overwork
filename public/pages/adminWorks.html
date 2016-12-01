@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="works" manifest="nocache.appcache">
+<html ng-app="adminWorks" manifest="nocache.appcache">
 
 <head>
     <meta charset="utf-8">
@@ -38,7 +38,7 @@
     <![endif]-->
 
     <!-- jQuery -->
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../bower_components/jquery/dist/jquery.min.js?81e7e24733a56bbf"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -75,14 +75,14 @@
     <script src="../bower_components/angular-datatables/dist/angular-datatables.min.js"></script>
     <link rel="stylesheet" href="../bower_components/angular-datatables/dist/css/angular-datatables.css">
 
-    <script src="../js/auth.js?4a71da0df60b8090"></script>
-    <script src="../js/works.js?3c3b71694a415433"></script>
+    <!-- ui bootstrap -->
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
 </head>
 
 <body>
 
-    <div id="wrapper"  ng-controller="worksCtrl">
+    <div id="wrapper" ng-controller="adminWorksCtrl">
 
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -116,7 +116,10 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         <li>
-                            <a href="overWork.html">申告フォーム</a>
+                            <a href="users.html">ユーザー管理</a>
+                        </li>
+                        <li>
+                            <a href="#">履歴</a>
                         </li>
                     </ul>
                 </div>
@@ -128,7 +131,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">勤務時間記録</h1>
+                    <h1 class="page-header">勤務時間承認</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -146,17 +149,24 @@
                                     <thead>
                                         <tr>
                                             <th>日付</th>
+                                            <th>ユーザー名</th>
                                             <th>退社予定時間</th>
                                             <th>残業理由</th>
                                             <th>退社時間</th>
+                                            <th>ステータス</th>
+                                            <th>拒絶理由</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr ng-repeat="work in ::works" >
                                             <td>{{formatDate(work.workDate)}}</td>
+                                            <td>{{work.username}}</td>
                                             <td>{{formatTime(work.estimateTime)}}</td>
                                             <td>{{work.workReason}}</td>
                                             <td>{{formatTime(work.finishedTime)}}</td>
+                                            <td ng-if="work.status == 'estimated'"><a ng-click="approveTime(work)">承認</a>　<a ng-if="work.status == 'estimated'" ng-click="openDeclineForm(work)">却下</a></td>
+                                            <td ng-if="work.status != 'estimated'">{{work.status}}</td>
+                                            <td>{{work.declineReason}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -174,9 +184,32 @@
         </div>
         <!-- /#page-wrapper -->
 
+        <!-- Modal for newGuestForm -->
+        <script type="text/ng-template" id="T_declineForm">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$dismiss()">&times;</button>
+                <h3>却下理由を入力してください。</h3>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <label>却下理由</label>
+                        <input ng-model="currentWork.declineReason" type="text" class="form-control" placeholder="却下理由" />
+                        <br />
+                        {{currentWork.username}}
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-success" ng-click="declineTime()">送信</button>
+            </div>
+        </script><!-- Modal for newGuestForm-->
     </div>
     <!-- /#wrapper -->
 
+    <script src="../js/auth.js?4a71da0df60b8090"></script>
+    <script src="../js/adminWorks.js?648fa8f58d3728ed"></script>
 </body>
 
 </html>

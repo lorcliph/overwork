@@ -1,7 +1,7 @@
 /**
  * Created by shinyaohnuki on 2016/06/23.
  */
-var app = angular.module('pages', ['datatables','ngCookies','auth']);
+var app = angular.module('works', ['datatables','ngCookies','auth']);
 
 app.controller('worksCtrl', ['$scope','$http','$cookies','$window','auth','$timeout', function ($scope, $http, $cookies, $window, auth, $timeout) {
 
@@ -16,7 +16,7 @@ app.controller('worksCtrl', ['$scope','$http','$cookies','$window','auth','$time
             console.log("accessToken :"+accessToken);
 
             $http.defaults.headers.common.Authorization = 'Bearer ' + accessToken;
-            $http.get('/api/works/' + userId).then(
+            $http.get('/api/works/user/' + userId).then(
                 function success(res){
                     console.log(JSON.stringify(res.data));
                     $timeout(function() {
@@ -44,5 +44,21 @@ app.controller('worksCtrl', ['$scope','$http','$cookies','$window','auth','$time
         $cookies.remove("accessToken");
         $cookies.remove("refreshToken");
         $window.location.href = "login.html";
+    };
+    $scope.formatDate = function(workDate){
+        console.log("formatDate:"+JSON.stringify(workDate));
+        if(workDate) {
+            return moment(workDate).format("YYYY/MM/DD");
+        }else{
+            return "";
+        }
+    };
+    $scope.formatTime = function(time){
+        console.log("formatTime:"+JSON.stringify(time));
+        if(time) {
+            return moment(time).format("HH:mm");
+        }else{
+            return "";
+        }
     };
 }]);

@@ -15,7 +15,7 @@ var oauth2 = require('./auth/oauth2');
 
 var app = express();
 
-app.set('port', process.env.PORT || config.get('port') || 3000);
+//app.set('port', 3000);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -6,10 +6,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>addUser</title>
+    <title>いつまで働くの？</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -54,8 +56,8 @@
 
 
     <!-- Custom Theme JavaScript -->
-    <script src="../js/auth.js"></script>
-    <script src="../js/overWork.js"></script>
+    <script src="../js/auth.js?4a71da0df60b8090"></script>
+    <script src="../js/overWork.js?1542038b8c8b7187"></script>
 
 
 </head>
@@ -71,7 +73,6 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">SB Admin v2.0</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -96,20 +97,26 @@
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">OverWork</h3>
+                        <h3 class="panel-title">{{todayStr}}はいつまで働くの？</h3>
                     </div>
                     <div class="panel-body">
-                        <div><H1>{{message}}</H1></div>
+                        <div class="col-md-4 btn btn-info">{{statusTag}}</div><div class="col-md-8"></div>
+                        <div class="col-md-12 alert alert-info">{{message1}}</div>
+                        <div class="col-md-12 alert alert-warning" ng-hide="message2==''">{{message2}}</div>
                         <form role="form">
                             <fieldset>
                                 <div class="form-group">
-                                    <input class="form-control" name="estiname_time" type="text" ng-disabled="estimateInput" ng-model="estimateTime" autofocus>
+                                    <input class="form-control" name="estiname_time" type="text" ng-hide="hideEstimate" ng-model="estimateTime" autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" name="reason" type="text" placeholder="残業理由を入力" ng-hide="hideEstimate" ng-model="workReason">
                                 </div>
 
-                                <a id='updateBtn' class="btn btn-lg btn-success btn-block" ng-disabled="updateDisabled" ng-click="updateEstimateTime()">update estimateTime</a>
-                                <a id='finishBtn' class="btn btn-lg btn-success btn-block" ng-disabled="finishDisabled" ng-click="finishWork()">finish work</a>
-                                <a class="btn btn-lg btn-default btn-block" href="works.html">work history</a>
-                                <a class="btn btn-lg btn-default btn-block" ng-click="logout()">logout</a>
+                                <a id='updateBtn' class="btn btn-lg btn-success btn-block" ng-hide="hideEstimate" ng-click="updateEstimateTime()">退社予定時間を入力</a>
+                                <a id='finishBtn' class="btn btn-lg btn-success btn-block" ng-hide="hideFinish" ng-click="finishWork()">業務終了！！</a>
+                                <a id='showUpdateBtn' class="btn btn-lg btn-success btn-block" ng-hide="hideShowBtn" ng-click="updateEstimateTime()">退社予定時間を更新</a>
+                                <a class="btn btn-lg btn-default btn-block" href="works.html?userid={{work.userId}}">勤務時間記録を見る</a>
+                                <a class="btn btn-lg btn-default btn-block" ng-click="logout()">ログアウト</a>
                             </fieldset>
                         </form>
                     </div>

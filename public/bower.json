@@ -41,6 +41,7 @@
     "angular-latest": "~1.5.7",
     "angular-datatables": "~0.5.4",
     "moment": "~2.14.1",
-    "moment-timezone": "~0.5.4"
+    "moment-timezone": "~0.5.4",
+    "angular-bootstrap": "^2.3.0"
   }
 }

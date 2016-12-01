@@ -1,0 +1,9 @@
+docker-compos.ymlはローカルDockerへデプロイする際の設定
+この場合、monogoコンテナも同時にデプロイする。
+
+Docker-Cloud経由AWSへデプロイする際はGitHubへPushする。
+Cloudにはあらかじめmongoコンテナのみを含むServiceを起動しておく。
+Cloud上のStack設定にnodeアプリとmongoを紐づける設定を記述しておく。
+→つまり、Cloud上でDocker-composeは使わない。
+
+こんな環境違いありなのかな。。。

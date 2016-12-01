@@ -20,7 +20,7 @@ User.remove({}, function(err) {
     
     user.save(function(err, user) {
         if(!err) {
-            log.info("New user - %s:%s", user.userName, user.password);
+            log.info("New user - %s:%s", user.username, user.password);
         }else {
             return log.error(err);
         }

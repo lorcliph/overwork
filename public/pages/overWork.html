@@ -54,6 +54,8 @@
     <!-- moment-timezone -->
     <script src="../bower_components/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
 
+    <!-- ui bootstrap -->
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="../js/auth.js?4a71da0df60b8090"></script>
@@ -64,7 +66,7 @@
 
 <body>
     <div class="container" ng-controller="overWorkCtrl">
-        <!-- Navigation -->
+        <!-- Navigation
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -74,7 +76,7 @@
                     <span class="icon-bar"></span>
                 </button>
             </div>
-            <!-- /.navbar-header -->
+            <!-- /.navbar-header
 
             <ul class="nav navbar-top-links navbar-right">
                 <li class="dropdown">
@@ -86,43 +88,66 @@
                             <a ng-click="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
-                    <!-- /.dropdown-user -->
+                    <!-- /.dropdown-user
                 </li>
-                <!-- /.dropdown -->
+                <!-- /.dropdown
             </ul>
-            <!-- /.navbar-top-links -->
+            <!-- /.navbar-top-links
         </nav>
+        -->
         <div id="page-wrapper">
-        <div class="row">
-            <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{{todayStr}}はいつまで働くの？</h3>
+                            <h3 class="panel-title">{{todayStr}}はいつまで働くの？</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="col-md-4 btn btn-info">{{statusTag}}</div><div class="col-md-8"></div>
-                        <div class="col-md-12 alert alert-info">{{message1}}</div>
-                        <div class="col-md-12 alert alert-warning" ng-hide="message2==''">{{message2}}</div>
-                        <form role="form">
-                            <fieldset>
-                                <div class="form-group">
-                                    <input class="form-control" name="estiname_time" type="text" ng-hide="hideEstimate" ng-model="estimateTime" autofocus>
+                        <div class="row">
+                            <!-- ng-class="{'btn-info' : btnInfo, 'btn-warning' : btnWarning, 'btn-success' : btnSuccess, 'btn-denger' : btnDenger}" -->
+                            <div class="col-md-4">
+                                <div class="panel panel-yellow">
+                                    <div class="panel-heading">ステータス</div>
+                                    <div class="panel-body">
+                                        <p>{{statusTag}}</p>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <input class="form-control" name="reason" type="text" placeholder="残業理由を入力" ng-hide="hideEstimate" ng-model="workReason">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">メッセージ</div>
+                                    <div class="panel-body">
+                                        <p>{{message1}}</p>
+                                        <p ng-hide="message2==''">{{message2}}</p>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
 
+                        <div class="row" ng-hide="hideEstimate">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">終了見込み</label>
+                                    <div uib-timepicker ng-model="estimateTime" ng-change="changed()" hour-step=hourStep minute-step=minuteStep show-meridian=amPm style="margin-left: 20px;"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="control-label">残業理由</label>
+                                    <textarea class="form-control" rows="3" name="reason" type="text" placeholder="残業理由を入力" ng-hide="hideEstimate" ng-model="workReason"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
                                 <a id='updateBtn' class="btn btn-lg btn-success btn-block" ng-hide="hideEstimate" ng-click="updateEstimateTime()">退社予定時間を入力</a>
                                 <a id='finishBtn' class="btn btn-lg btn-success btn-block" ng-hide="hideFinish" ng-click="finishWork()">業務終了！！</a>
-                                <a id='showUpdateBtn' class="btn btn-lg btn-success btn-block" ng-hide="hideShowBtn" ng-click="updateEstimateTime()">退社予定時間を更新</a>
+                                <a id='showUpdateBtn' class="btn btn-lg btn-success btn-block" ng-hide="hideShowBtn" ng-click="showEstimateTime()">退社予定時間を更新</a>
                                 <a class="btn btn-lg btn-default btn-block" href="works.html?userid={{work.userId}}">勤務時間記録を見る</a>
                                 <a class="btn btn-lg btn-default btn-block" ng-click="logout()">ログアウト</a>
-                            </fieldset>
-                        </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
 </body>

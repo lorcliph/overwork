@@ -12,5 +12,5 @@ app.set('port', 3000);
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + app.get('port') + "__dirname:" + __dirname);
-  log.info('Express server listening on port ' + app.get('port')+ "__dirname:" + __dirname);
+  log.info('www:15 Express server listening on port ' + app.get('port')+ "__dirname:" + __dirname);
 });

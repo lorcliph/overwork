@@ -5,6 +5,9 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var methodOverride = require('method-override');
 var serveStatic = require('serve-static');
+var morgan = require('mogan');
+var FileStreamRotator = require('file-stream-rotator')
+var fs = require('fs')
 
 var libs = '/src/libs/';
 require(libs + 'auth/auth');
@@ -15,15 +18,30 @@ var oauth2 = require('./auth/oauth2');
 
 var app = express();
 
-app.set('port', 3000);
+//app.set('port', 3000);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(methodOverride());
 app.use(passport.initialize());
-
 app.use(serveStatic('/src/public'));
+
+
+//Morgan setup
+var logDirectory = path.join(__dirname, 'morgan')
+
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory)
+
+var accessLogStream = FileStreamRotator.getStream({
+    date_format: 'YYYYMMDD',
+    filename: path.join(logDirectory, 'access-%DATE%.log'),
+    frequency: 'daily',
+    verbose: false
+})
+
+app.use(morgan('combined', {stream: accessLogStream}))
+//Mogan setup end
 
 var api = require('./routes/api');
 var users = require('./routes/users');
